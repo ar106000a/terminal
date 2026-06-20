@@ -1,0 +1,50 @@
+.screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: var(--color-terminal-bg);
+  overflow: hidden;
+}
+
+/* Simulated CRT Scanline Screen Overlay */
+.screen::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background:
+    /* Horizontal scanlines use the dynamic variable */
+    linear-gradient(rgba(18, 16, 16, 0) 50%, var(--crt-scanline-color) 50%),
+    /* Vertical sub-pixel RGB lines use dynamic variables */
+    linear-gradient(
+      90deg,
+      var(--crt-phosphor-r),
+      var(--crt-phosphor-g),
+      var(--crt-phosphor-b)
+    );
+  z-index: 99;
+  background-size:
+    100% 4px,
+    6px 100%;
+  pointer-events: none;
+}
+
+/* Subtle CRT Flicker */
+@keyframes flicker {
+  0% {
+    opacity: 0.98;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.99;
+  }
+}
+
+.flickerWrapper {
+  animation: flicker 0.15s infinite;
+}

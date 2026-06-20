@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   DEFAULT STATE: DEEP MATRIX DISK LAYER (DARK MODE)
+   ========================================================================== */
+:root,
+[data-theme="dark"] {
+  --color-terminal-bg: #050505;
+  --color-terminal-pane: #0c0d0e;
+  --color-terminal-border: #1a231b;
+  --color-terminal-text: #ffffff; /* Clean white output text */
+
+  /* Phosphor Green Palettes */
+  --color-neon-green: #39ff14;
+  --color-pale-green: #a3e635;
+  --color-dim-green: #14532d;
+  --color-cyber-cyan: #00ffff;
+
+  /* CRT Overlay Variables for Dark Mode */
+  /* Reduce scanline intensity so they aren't distracting */
+  --crt-scanline-color: rgba(0, 0, 0, 0.15);
+
+  /* Phosphor glow: Dramatically reduced to avoid 'haze' */
+  --crt-phosphor-r: rgba(255, 60, 60, 0.02);
+  --crt-phosphor-g: rgba(60, 255, 60, 0.02);
+  --crt-phosphor-b: rgba(60, 60, 255, 0.02);
+
+  /* Flicker: Keep it very tight so it’s barely noticeable */
+  --crt-flicker-opacity-min: 0.98;
+
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ==========================================================================
+   INVERTED STATE: Clinical Monochromatic Workspace (LIGHT MODE)
+   ========================================================================== */
+[data-theme="light"],
+.light {
+  --color-terminal-bg: #fafafa; /* Crisp clinical white canvas */
+  --color-terminal-pane: #f4f4f5; /* Clean gray window tracking bars */
+  --color-terminal-border: #27272a; /* Clean sharp dark framing borders */
+  --color-terminal-text: #09090b; /* High-contrast dark charcoal ink */
+
+  /* Adjusted for premium legibility on light sheets */
+  --color-neon-green: #16a34a; /* Vibrant, highly readable dark green */
+  --color-pale-green: #27272a; /* Solid primary reader text */
+  --color-dim-green: #71717a; /* Refined gray for secondary indicators */
+  --color-cyber-cyan: #0284c7; /* Crisp deep sky blue command anchors */
+
+  /* CRT Overlay Variables for Light Mode */
+  --crt-scanline-color: rgba(
+    39,
+    39,
+    42,
+    0.08
+  ); /* Soft slate gray lines to cut through bright white */
+  --crt-phosphor-r: rgba(220, 38, 38, 0.03); /* Muted premium sub-pixels */
+  --crt-phosphor-g: rgba(22, 163, 74, 0.02);
+  --crt-phosphor-b: rgba(2, 132, 199, 0.04);
+  --crt-flicker-opacity-min: 0.98;
+
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ==========================================================================
+   GLOBAL UTILITIES HARDENING
+   ========================================================================== */
+body {
+  background-color: var(--color-terminal-bg);
+  color: var(--color-pale-green);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Seamless theme inversion handles for global inputs and code spaces */
+input,
+textarea {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+* {
+  box-sizing: border-box;
+  border-radius: 0px !important; /* Forces 0px everywhere as specified */
+}
+
+/* Global Utilities for CRT Glow */
+.crt-glow {
+  text-shadow: 0 0 4px rgba(57, 255, 20, 0.4);
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-fade-in {
+  opacity: 0;
+  animation: fade-in 0.3s ease-out forwards;
 }

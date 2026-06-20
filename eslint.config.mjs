@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Append your custom rule overrides here:
+  {
+    rules: {
+      "tailwind-canonical-classes/enforce-canonical-classes": "off",
+      "better-tailwindcss/enforce-canonical-classes": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
