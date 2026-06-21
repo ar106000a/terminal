@@ -3,20 +3,17 @@ import Image from "next/image";
 
 export default function HomeDashboardPage() {
   return (
-    <div className="w-full min-h-[calc(100vh-36px)] p-4 bg-(--color-terminal-bg) grid grid-cols-1 xl:grid-cols-12 gap-4 auto-rows-max xl:auto-rows-fr">
-      {/* LEFT COLUMN: Main Interactive Console Shell (Forces fixed calculation on desktop) */}
-      <main className="xl:col-span-8 h-[60vh] xl:h-[calc(100vh-68px)] flex flex-col">
+    <div className="w-full min-h-[calc(100vh-36px)] p-4 bg-(--color-terminal-bg) grid grid-cols-1 lg:grid-cols-12 gap-4 auto-rows-max lg:auto-rows-fr">
+      {/* LEFT COLUMN */}
+      <main className="lg:col-span-8 h-[60vh] lg:h-[calc(100vh-68px)] flex flex-col">
         <TerminalShell />
       </main>
 
-      <aside className="xl:col-span-4 flex flex-col gap-4 h-auto xl:h-[calc(100vh-68px)] overflow-y-auto xl:overflow-y-hidden">
-        {/* NEW: Visual Identification Header */}
+      {/* RIGHT COLUMN */}
+      <aside className="lg:col-span-4 flex flex-col gap-4 h-auto lg:h-[calc(100vh-68px)] overflow-y-auto lg:overflow-y-hidden">
+        {/* Visual Identification Header */}
         <div className="border border-(--color-terminal-border) bg-(--color-terminal-pane) p-2 flex items-center gap-3">
           <div className="w-16 h-16 bg-[#222] border border-(--color-terminal-border) flex items-center justify-center overflow-hidden">
-            {/* PLACEHOLDER FOR IMAGE: Use a 1:1 aspect ratio logo or professional headshot */}
-            {/* <span className="text-[10px] text-(--color-dim-green)">
-              [ IMAGE ]
-            </span> */}
             <Image src="/image.jpg" alt="image pfp" width={200} height={200} />
           </div>
           <div className="font-mono text-[11px] leading-tight">
@@ -57,7 +54,6 @@ export default function HomeDashboardPage() {
             ACTIVE_CLUSTER_NODES
           </div>
           <div className="space-y-3 flex-1">
-            {/* Mapping these makes it easier to update status later */}
             {[
               { name: "SENTINEL_AUTH", status: "DEVELOPMENT", version: "v1.0" },
               { name: "DEV_BRIEF", status: "ONLINE", version: "v2.1" },

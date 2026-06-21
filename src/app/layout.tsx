@@ -126,7 +126,7 @@ export default function RootLayout({
               </aside>
 
               {/* ROUTE VIEWPORT */}
-              <main className="flex-1 flex flex-col bg-(--color-terminal-bg) overflow-hidden relative">
+              <main className="flex-1 flex flex-col bg-(--color-terminal-bg) overflow-y-auto relative">
                 {children}
               </main>
             </div>
