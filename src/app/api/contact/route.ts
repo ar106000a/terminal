@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { google } from "googleapis";
+import { z } from "zod";
 
 // Pull credentials from your environment variables
 const CLIENT_ID = process.env.GMAIL_CLIENT_ID;
@@ -12,11 +13,21 @@ const MY_EMAIL = process.env.MY_EMAIL_ADDRESS; // Your receiving/sending email
 
 const OAuth2 = google.auth.OAuth2;
 
+// Zod v4 strict schema (utilizing direct email and non-optional)
+const payloadSchema = z
+  .object({
+    email: z.email(),
+    subject: z.string().min(1, "Subject is required"),
+    message: z.string().min(10, "Message payload too short"),
+  })
+  .strict();
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, subject, message } = body;
-
+    
+    const validatedData = payloadSchema.parse(body);
+    const { email, subject, message } = validatedData;
     // Basic Validation
     if (!email || !subject || !message) {
       return NextResponse.json(
@@ -79,6 +90,13 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      // Payload dropped at the edge
+      return NextResponse.json(
+        { status: "PAYLOAD_REJECTED", errors: error.issues },
+        { status: 400 },
+      );
+    }
     console.error("Transmission Error:", error);
     return NextResponse.json({ error: "TRANSMISSION_FAILED" }, { status: 500 });
   }

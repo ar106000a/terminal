@@ -58,24 +58,41 @@ export default function ConnectPage() {
 
       addLog("> [ NETWORK ] SECURE TUNNEL ESTABLISHED. TRANSMITTING...");
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
+      if (!response.ok) {
+        setIsSubmitting(false);
+        if (data.status === "PAYLOAD_REJECTED" && Array.isArray(data.errors)) {
+          addLog(
+            "> [ CRITICAL ] TRANSMISSION_REJECTED: Payload failed edge checks.",
+          );
 
-      if (data.status === "TRANSMISSION_SUCCESS") {
-        addLog("> [ SUCCESS ] PAYLOAD DELIVERED.");
-        addLog("> [ SYSTEM ] TERMINATING UPLINK... NODE_RESET.");
-        // Reset the physical form inputs
-        (e.target as HTMLFormElement).reset();
-      } else {
-        throw new Error("API rejected payload.");
+          // Loop through Zod issues and write them to terminal
+          data.errors.forEach((issue) => {
+            const field = issue.path.join(".");
+            addLog(
+              `>   └─ [VALIDATION_FAILURE] ${field.toUpperCase()}: ${issue.message}`,
+            );
+          });
+        } else {
+          // Fallback for non-Zod errors (e.g., 500 network failure)
+          addLog(
+            `> [ CRITICAL ] TRANSMISSION_FAILED: ${data.error || "NODE_FAILURE"}`,
+          );
+        }
+        return;
       }
+      setIsSubmitting(false);
+      addLog("> [ OK ] TRANSMISSION_SUCCESS: Uplink secure. Mail dropped.");
+      formData.set("email", "");
+      formData.set("message", "");
+      formData.set("subject", "");
     } catch (error) {
-      addLog("> [ FATAL_ERROR ] CONNECTION REFUSED OR TIMED OUT.");
-      addLog("> [ SYSTEM ] RETAINING BUFFER FOR RETRY.");
-      console.error(error);
+      // Catch-all for complete network drops/fetch rejections
+      setIsSubmitting(false);
+      console.error("Uplink broke entirely:", error);
+      addLog(
+        "> [ FATAL ] UPLINK_BROKEN: Cannot establish connection to server node.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -202,7 +219,7 @@ export default function ConnectPage() {
       </section>
 
       {/* ================= RIGHT TIER: NETWORK ROUTING TELEMETRY ================= */}
-      <section className="lg:col-span-5 flex flex-col gap-4 h-auto lg:h-[calc(100vh-80px)] min-h-[500px]">
+      <section className="lg:col-span-5 flex flex-col gap-4 h-auto  lg:min-h-[calc(100vh-80px)] overflow-y-scroll">
         {/* Secure Port Information Panel */}
         <div className="border border-(--color-terminal-border) bg-(--color-terminal-bg) p-4 space-y-4 flex-1">
           <div className="text-(--color-dim-green) font-bold text-[11px] tracking-wide uppercase">
@@ -247,7 +264,7 @@ export default function ConnectPage() {
         </div>
 
         {/* Real-time Buffer Stream Monitor Panel */}
-        <div className="border border-(--color-terminal-border) bg-(--color-terminal-pane) p-4 h-56 flex flex-col justify-between overflow-hidden">
+        <div className="border border-(--color-terminal-border) bg-(--color-terminal-pane) p-4 h-125 shrink-0 flex flex-col justify-between overflow-hidden">
           <div className="text-(--color-dim-green) font-bold text-[11px] uppercase tracking-wider flex justify-between shrink-0 mb-3 border-b border-(--color-terminal-border)/40 pb-2">
             <span>[ live_egress_stream ]</span>
             <span className="animate-pulse text-(--color-neon-green)">
