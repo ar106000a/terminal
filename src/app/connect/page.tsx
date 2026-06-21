@@ -67,12 +67,14 @@ export default function ConnectPage() {
           );
 
           // Loop through Zod issues and write them to terminal
-          data.errors.forEach((issue) => {
-            const field = issue.path.join(".");
-            addLog(
-              `>   └─ [VALIDATION_FAILURE] ${field.toUpperCase()}: ${issue.message}`,
-            );
-          });
+          data.errors.forEach(
+            (issue: { path: (string | number)[]; message: string }) => {
+              const field = issue.path.join(".");
+              addLog(
+                `>   └─ [VALIDATION_FAILURE] ${field.toUpperCase()}: ${issue.message}`,
+              );
+            },
+          );
         } else {
           // Fallback for non-Zod errors (e.g., 500 network failure)
           addLog(
